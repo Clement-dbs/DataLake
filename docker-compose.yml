@@ -1,0 +1,65 @@
+services:
+  generator:
+    build:
+      context: ./generator
+      dockerfile: Dockerfile
+    environment:
+      S3_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: rootuser
+      AWS_SECRET_ACCESS_KEY: rootpass123
+      BRONZE_BUCKET: bronze  
+    volumes:
+      - dataLakeVolume:/data
+    networks:
+      - network
+
+  cleaner:
+    build:
+      context: ./cleaner
+      dockerfile: Dockerfile
+    environment:
+      S3_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: rootuser
+      AWS_SECRET_ACCESS_KEY: rootpass123
+      BRONZE_BUCKET: silver
+    volumes:
+      - dataLakeVolume:/data
+    networks:
+      - network
+
+  aggregator:
+    build:
+      context: ./aggregator
+      dockerfile: Dockerfile
+    environment:
+      S3_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: rootuser
+      AWS_SECRET_ACCESS_KEY: rootpass123
+      BRONZE_BUCKET: gold
+    volumes:
+      - dataLakeVolume:/data
+    networks:
+      - network
+    
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: rootuser
+      MINIO_ROOT_PASSWORD: rootpass123
+      MINIO_REGION: us-east-1
+    ports:
+      - "9000:9000"   
+      - "9001:9001"
+    volumes:
+      - dataMinio:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - network
+
+volumes:
+  dataLakeVolume:
+  dataMinio:
+
+networks : 
+  network:
