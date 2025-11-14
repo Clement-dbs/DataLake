@@ -1,7 +1,7 @@
 from minio import Minio
 import time
 
-# attendre que MinIO démarre
+
 time.sleep(5)
 
 client = Minio(

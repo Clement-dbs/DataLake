@@ -2,7 +2,6 @@ import os, io, json
 import boto3
 from botocore.client import Config
 
-
 def s3_client():
     endpoint = os.getenv("S3_URL", "http://localhost:9000")
     return boto3.client(
