@@ -1,4 +1,5 @@
 services:
+  # Generator
   generator:
     build:
       context: ./generator
@@ -13,6 +14,7 @@ services:
     networks:
       - network
 
+  # Cleaner
   cleaner:
     build:
       context: ./cleaner
@@ -27,6 +29,7 @@ services:
     networks:
       - network
 
+  # Aggregator
   aggregator:
     build:
       context: ./aggregator
@@ -40,7 +43,8 @@ services:
       - dataLakeVolume:/data
     networks:
       - network
-    
+
+  # Minio
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -57,9 +61,19 @@ services:
     networks:
       - network
 
+  # Minio init (création des buckets)
+  minio-init:
+    build:
+      context: ./minio_init
+      dockerfile: Dockerfile
+    depends_on:
+      - minio
+    networks:
+      - network
+
 volumes:
   dataLakeVolume:
   dataMinio:
 
-networks : 
+networks:
   network:
